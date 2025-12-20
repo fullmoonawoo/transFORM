@@ -200,8 +200,5 @@ def get_cli_arguments():
 if __name__ == "__main__":
     session_args = get_cli_arguments()
     job = Transform(mode=session_args.mode, source=session_args.source_file, delimiter=session_args.delimiter, symbol=session_args.symbol, position=session_args.position, jump=session_args.jump)
-    #job.check_lenght()
-    job.transform('/home/fma44/Documents/python_projects/transFORM_backup')
-    #job.change_position('/home/fma44/Documents/python_projects/transFORM_backup')
-    #job.replace_delimiter('/home/fma44/Documents/python_projects/transFORM_backup')
+
 
