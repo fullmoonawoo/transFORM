@@ -29,10 +29,9 @@ class Transform:
         self.jump = int(jump)
         # File name
         self.file_name = source.split('.')[0]
-        self.script_real_path = os.path.realpath(source)
-        self.script_folder = os.path.dirname(self.script_real_path)
-        #print(self.script_real_path)
-        #print(self.script_folder)
+        print("FILE NAME: ", self.file_name)
+        self.root_real_path = os.path.realpath(source)
+        self.root_folder = os.path.dirname(self.root_real_path)
         self.datalines = []
         # Automatic loading
         self.load_data()
@@ -70,8 +69,8 @@ class Transform:
             return False
 
 
-    def transform(self, path):
-        self.file_path = self.file_name + '_output.txt'
+    def transform(self):
+        self.file_path = self.root_folder + '/' + self.file_name + '_output_T.txt'
         self.tokens_dump = []
         for line in self.datalines:
             self.tokens = self.tokenize(line)
@@ -93,8 +92,8 @@ class Transform:
         self.tokens_dump = []
 
 
-    def change_position(self, path):
-        self.file_path = self.file_name + '_output_CP.txt'
+    def change_position(self):
+        self.file_path = self.root_folder + '/' + self.file_name + '_output_C.txt'
         self.tokens_dump = []
         for line in self.datalines:
             self.tokens = self.tokenize(line)
@@ -114,8 +113,8 @@ class Transform:
         self.tokens_dump = []
 
 
-    def replace_delimiter(self, path):
-        self.file_path = self.file_name + '_output_C.txt'
+    def replace_delimiter(self):
+        self.file_path = self.root_folder + '/' + self.file_name + '_output_R.txt'
         self.tokens_dump = []
         for line in self.datalines:
             self.tokens = self.tokenize(line)
@@ -200,5 +199,10 @@ def get_cli_arguments():
 if __name__ == "__main__":
     session_args = get_cli_arguments()
     job = Transform(mode=session_args.mode, source=session_args.source_file, delimiter=session_args.delimiter, symbol=session_args.symbol, position=session_args.position, jump=session_args.jump)
-
-
+    match job.mode:
+        case 'T':
+            job.transform()
+        case 'R':
+            job.replace_delimiter()
+        case 'C':
+            job.change_position()
