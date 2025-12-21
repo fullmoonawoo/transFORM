@@ -18,32 +18,28 @@ class Transform:
         # symbol:      > symbol what will be add between characters [function: transform]
         # position:    > put position index of column what you want to modify
         # jump:        > number of characters after which the string in column is divided by the separator
+        
         self.mode = mode
         self.source = source
         self.delimiter = delimiter
         self.separator = symbol
         self.position = False
         if position:
-            self.position = [int(x) for x in position.split(',')]
-        #self.position = position - 1
-        self.jump = int(jump)
+            self.position = [int(x) - 1 for x in position.split(',')]
+        self.jump = jump
         # File name
         self.file_name = source.split('.')[0]
-        print("FILE NAME: ", self.file_name)
         self.root_real_path = os.path.realpath(source)
         self.root_folder = os.path.dirname(self.root_real_path)
         self.datalines = []
         # Automatic loading
         self.load_data()
 
-        # Probes:
-
 
     def load_data(self):
         with open(self.source, "r", newline='') as data_source:
             self.datalines = [line.rstrip() for line in data_source.readlines()]
-            print('DATALINES: ', self.datalines)
-            print(f"Reading of {self.source} was sucessfull")
+            #print(f"Reading of {self.source} was sucessfull")
 
     def show_data(self):
         if self.datalines:
@@ -119,7 +115,6 @@ class Transform:
         for line in self.datalines:
             self.tokens = self.tokenize(line)
             self.to_change = self.tokens[self.position]
-            print('TO CHANGE: ', self.to_change)
             self.tokens[self.position] = self.to_change.replace(self.delimiter, self.separator)
             self.tokens_dump.append(self.tokens)
         
@@ -153,6 +148,7 @@ class Transform:
             for line in dump:
                 output.writelines(new_delimiter.join(line))
                 output.writelines("\n")
+        print(f"Transformation has been sucessfull. Output file: {path}")
 
 
     def throw_to_csv(self, dump, path):
@@ -167,26 +163,25 @@ class Transform:
     
     
 def get_cli_arguments():
-    cli_parser = argparse.ArgumentParser(prog=sys.argv[0], description="Tool for transforming structured data files. Script can modify data on some position with periodic insert of selected symbol, replace delimiter or replace character in specific column and column index")
+    ascii_art = r"""
+    ___ ____ ____ _  _ ____ ____ ____ ____ _  _ 
+     |  |__/ |__| |\ | [__  |___ |  | |__/ |\/| 
+     |  |  \ |  | | \| ___] |    |__| |  \ |  |                                
+    """
+    cli_parser = argparse.ArgumentParser(prog=sys.argv[0], 
+                                         description=f"{ascii_art}\n Tool for transforming structured data files. Script can modify data on some position with periodic insert of selected symbol, replace delimiter or replace character in specific column and column index",
+                                         formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    # ARGUMENTS:
-        # mode:        > choose the required mode: -T - transform - modify data on some position with choosen symbol, -R - replace - only replace existing delimiter with the substitutor, -C - change character on position - replace index of existing character on selected position with substitutor
-        # source:      > source file in txt/csv format written in csv columns
-        # delimiter:   > what delimiter is used in source file
-        # symbol:      > symbol what will be add between characters
-        # position:    > put position index of column what you want to modify
-        # jump:        > number of characters after which the string in column is divided by the separator
-        # output:      > choose output format of the file [txt or csv]
-    cli_parser.add_argument('-m', '--mode', choices=['T', 'R', 'C'], 
+    cli_parser.add_argument('-m', '--mode', choices=['T', 'R', 'C'], type=str, 
                             help="Three available modes: \n"
                             "T - transform - modify data on some position with choosen symbol\n" 
                             "R - replace - only replace existing delimiter with the substitutor\n" 
                             "C - change character on position - replace index of existing character on selected position with substitutor\n")
-    cli_parser.add_argument('-s', '--source_file', help='Source file')
-    cli_parser.add_argument('-d', '--delimiter', help='Existing delimiter in source file')
-    cli_parser.add_argument('-sb', '--symbol', help='Transformation mode: symbol which modify data in specific columns')
-    cli_parser.add_argument('-p', '--position', help='In case we want to modify only data on some row position in dataset')
-    cli_parser.add_argument('-j', '--jump', help='Transformation mode: Gap for a between placed symbols')
+    cli_parser.add_argument('-s', '--source_file', type=str, help='Source file')
+    cli_parser.add_argument('-d', '--delimiter', type=str, help='Existing delimiter in source file')
+    cli_parser.add_argument('-sb', '--symbol', type=str, help='Transformation mode: symbol which modify data in specific columns. If you need to use some special characters, is necesarry to escape them by \\')
+    cli_parser.add_argument('-p', '--position', type=str, help='In case we want to modify only data on some row position in dataset')
+    cli_parser.add_argument('-j', '--jump', type=int, help='Transformation mode: Gap for a between placed symbols')
 
     if len(sys.argv) <= 1:
         cli_parser.print_usage()
