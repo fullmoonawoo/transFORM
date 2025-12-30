@@ -19,6 +19,7 @@ class Transform:
         # position:    > put position index of column what you want to modify
         # jump:        > number of characters after which the string in column is divided by the separator
         
+        self.os = sys.platform
         self.mode = mode
         self.source = source
         self.delimiter = delimiter
@@ -31,6 +32,12 @@ class Transform:
         self.file_name = source.split('.')[0]
         self.root_real_path = os.path.realpath(source)
         self.root_folder = os.path.dirname(self.root_real_path)
+        if 'linux' in self.os.lower():
+            print(self.os)
+            self.file_path = self.root_folder + '/' + self.file_name + '_output.txt'
+        elif 'win' in self.os.lower():
+            print('Windows')
+            self.file_path = self.root_folder + '\\' + self.file_name + '_output.txt'
         self.datalines = []
         # Automatic loading
         self.load_data()
@@ -66,7 +73,6 @@ class Transform:
 
 
     def transform(self):
-        self.file_path = self.root_folder + '/' + self.file_name + '_output_T.txt'
         self.tokens_dump = []
         for line in self.datalines:
             self.tokens = self.tokenize(line)
@@ -89,7 +95,6 @@ class Transform:
 
 
     def change_position(self):
-        self.file_path = self.root_folder + '/' + self.file_name + '_output_C.txt'
         self.tokens_dump = []
         for line in self.datalines:
             self.tokens = self.tokenize(line)
@@ -110,7 +115,6 @@ class Transform:
 
 
     def replace_delimiter(self):
-        self.file_path = self.root_folder + '/' + self.file_name + '_output_R.txt'
         self.tokens_dump = []
         for line in self.datalines:
             self.tokens = self.tokenize(line)
@@ -166,7 +170,7 @@ def get_cli_arguments():
     ascii_art = r"""
     ___ ____ ____ _  _ ____ ____ ____ ____ _  _ 
      |  |__/ |__| |\ | [__  |___ |  | |__/ |\/| 
-     |  |  \ |  | | \| ___] |    |__| |  \ |  |                                
+     |  |  \ |  | | \| ___] |    |__| |  \ |  | by Lukas Rausa                                 
     """
     cli_parser = argparse.ArgumentParser(prog=sys.argv[0], 
                                          description=f"{ascii_art}\n Tool for transforming structured data files. Script can modify data on some position with periodic insert of selected symbol, replace delimiter or replace character in specific column and column index",
